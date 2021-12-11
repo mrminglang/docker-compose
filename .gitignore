@@ -12,4 +12,5 @@ mariadb/data
 rabbitmq/data
 rabbitmq/log
 redis/data
+etcd/etcd-data
 
