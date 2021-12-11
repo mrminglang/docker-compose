@@ -1,0 +1,15 @@
+jenkinsci/jenkins-data
+jenkins/jenkins-data
+/.idea
+/.vscode
+mariadb/data
+mysql/data
+mongo/data
+mongo/log
+postgreSQL/data
+grafana/data
+mariadb/data
+rabbitmq/data
+rabbitmq/log
+redis/data
+

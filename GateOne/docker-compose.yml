@@ -1,0 +1,12 @@
+
+version: '3'
+
+services:
+  mongo:
+    image: liftoff/gateone
+    container_name: "gateone"
+    restart: always
+    environment:
+    ports:
+      - 8000:8000
+    volumes: 

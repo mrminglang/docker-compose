@@ -1,0 +1,16 @@
+version: "3"
+
+services:
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/var/lib/grafana:rw
+      - /etc/localtime:/etc/localtime #同步宿主机和容器时间
+networks:
+  default:
+    external:
+      name: app

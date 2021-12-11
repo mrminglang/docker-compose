@@ -1,0 +1,19 @@
+version: '3.7'
+
+services:
+  minio:
+    container_name: shimo-api
+    image: node:12
+    volumes:
+      - ~/work:/work
+    ports:
+      - "9002:9002"
+    working_dir: /work/shimo/api
+    environment:
+      - PATH=$PATH:/work/shimo/api/node_modules/.bin/
+    networks:
+      - app
+    tty: true
+networks:
+  app:
+    external: true

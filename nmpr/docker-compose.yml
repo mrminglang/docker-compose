@@ -1,0 +1,80 @@
+version: "3"
+
+services:
+  php:
+    build:
+      context: ./build/php
+      dockerfile: Dockerfile
+      args:
+        - USER_NAME=${USER_NAME}
+        - USER_PASSWORD=${USER_PASSWORD}
+    container_name: php
+    restart: always
+    volumes:
+      - ~/work:/work:rw
+      - ~/.ssh:/home/${USER_NAME}/.ssh
+      - ./work/components/php/config/php.ini:/usr/local/etc/php/php.ini:ro
+      - ./work/components/php/config/php-fpm.conf:/usr/local/etc/php-fpm.d/www.conf:rw
+      - ./work/components/php/log:/var/log:rw
+      - ./work/components/php/.composer:/root/.composer:rw
+      - ./www:/www:rw
+    privileged: true
+    ports:
+      - "9000:9000"
+      - "8888:8888"
+      - "9090:9090"
+      - "9091:9091"
+    networks:
+      - app
+
+  redis:
+    image: redis:5.0.4
+    container_name: redis
+    command: redis-server /usr/local/etc/redis/redis.conf
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./work/components/redis/config/redis.conf:/usr/local/etc/redis/redis.conf:ro
+      # - ./work/components/redis/log/redis.log:/var/log/redis/redis.log:rw
+      - ./work/components/redis/data:/data:rw
+    restart: always
+    privileged: true
+    networks:
+      - app
+
+  nginx:
+    image: nginx:1.16.0
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ~/work:/work:rw
+      - ./work/components/nginx/config/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./work/components/nginx/config/conf.d:/etc/nginx/conf.d:ro
+      - ./work/components/nginx/log:/var/log/nginx:rw
+      - ./www:/www:rw
+    command: [nginx-debug, "-g", "daemon off;"]
+    restart: always
+    privileged: true
+    networks:
+      - app
+  mysql:
+    image: mysql:8.0.16
+    container_name: mysql
+    command: [--default-authentication-plugin=mysql_native_password, --sql_mode=]
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql/conf.d:/etc/mysql/conf.d
+      - ./mysql/data:/var/lib/mysql
+      - ~/work:/work:rw
+    restart: always
+    networks:
+      - app
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+
+networks:
+  app:
+    external: true

@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    restart: always
+    privileged: true # 解决权限
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: postgres
+      TZ: Asia/Shanghai
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./data:/var/lib/postgresql/data:rw
+    networks:
+      - app
+networks:
+  app:
+    external: true
