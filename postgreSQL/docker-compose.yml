@@ -7,9 +7,9 @@ services:
     restart: always
     privileged: true # 解决权限
     environment:
-      POSTGRES_USER: root
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123456
-      POSTGRES_DB: postgres
+      POSTGRES_DB: xtplat
       TZ: Asia/Shanghai
     ports:
       - '5432:5432'

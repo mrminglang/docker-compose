@@ -13,4 +13,9 @@ rabbitmq/data
 rabbitmq/log
 redis/data
 etcd/etcd-data
+kafka/kafka/logs
+debezium/kafka/logs
+debezium/postgresql/data
+debezium/zookeeper/data
+debezium/zookeeper/datalog
 

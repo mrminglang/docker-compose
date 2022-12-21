@@ -1,0 +1,92 @@
+version: '3'
+
+services:
+  zookeeper:
+    image: debezium/zookeeper
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+      - "2888:2888"
+      - "3888:3888"
+    volumes:
+      - ./zookeeper/data:/data:rw
+      - ./zookeeper/datalog:/datalog:rw
+    restart: always
+    privileged: true
+    networks:
+      - debezium
+
+  kafka:
+    image: debezium/kafka
+    container_name: kafka
+    ports:
+      - "9092:9092"
+#    environment:
+#      KAFKA_ADVERTISED_HOST_NAME: 127.0.0.1 # 主机IP
+#      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181 # 运行是基于zookeeper的
+#      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://127.0.0.1:9092 # 主机IP:端口
+#      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092 # 指定主机名和端口
+#      KAFKA_HEAP_OPTS: "-Xmx256M -Xms128M" # 默认-Xmx1G -Xms1G的JVM内存配置
+#    volumes:
+#      - ./kafka/logs:/kafka:rw
+    links:
+      - zookeeper
+    restart: always
+    privileged: true
+    networks:
+      - debezium
+
+  postgres:
+    image: debezium/example-postgres
+    container_name: postgres
+    environment:
+      POSTGRES_PASSWORD: 123456
+      TZ: Asia/Shanghai
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./postgresql/data:/var/lib/postgresql/data:rw
+    restart: always
+    privileged: true # 解决权限
+    networks:
+      - debezium
+
+  connect:
+    image: debezium/connect
+    container_name: connect
+    ports:
+      - "8083:8083"
+    environment:
+      GROUP_ID: 1
+      CONFIG_STORAGE_TOPIC: my_connect_configs
+      OFFSET_STORAGE_TOPIC: my_connect_offsets
+      STATUS_STORAGE_TOPIC: my_connect_statuses
+    links:
+      - zookeeper
+      - kafka
+      - postgres
+    restart: always
+    privileged: true
+    networks:
+      - debezium
+
+  kafka-manager:
+    image: sheepkiller/kafka-manager
+    container_name: debezium-manager
+    ports:
+      - "9000:9000"
+    environment:
+      ZK_HOSTS: zookeeper:2181
+      APPLICATION_SECRET: letmein
+      KM_ARGS: -Djava.net.preferIPv4Stack=true
+    links:
+      - zookeeper
+      - kafka
+    restart: always
+    privileged: true
+    networks:
+      - debezium
+
+networks:
+  debezium:
+    external: true

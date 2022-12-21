@@ -1,0 +1,20 @@
+version: "3"
+
+services:
+  dm8:
+    image: dm8:v01
+    container_name: dm8
+#    restart: always
+    ports:
+      - "5236:5236"
+    environment:
+      TZ: Asia/Shanghai
+    command: /bin/bash /startDm.sh
+    volumes:
+      - ./data:/dm8/data:rw
+#      - ./localtime:/etc/localtime:rw
+    networks:
+      - app
+networks:
+  app:
+    external: true
