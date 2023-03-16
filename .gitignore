@@ -18,4 +18,8 @@ debezium/kafka/logs
 debezium/postgresql/data
 debezium/zookeeper/data
 debezium/zookeeper/datalog
+es/conf
+es/data
+es/logs
+es/plugins
 

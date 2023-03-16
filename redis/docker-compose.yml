@@ -1,14 +1,18 @@
 version: '3'
 
-services: 
+services:
   redis:
     image: redis:5.0.4
     container_name: redis
-    command: redis-server --appendonly yes
+    command: ["redis-server", "/etc/redis/redis.conf"]
     ports:
       - "6379:6379"
+    environment:
+      TZ: Asia/Shanghai
     volumes:
+      - ./config/redis.conf:/etc/redis/redis.conf:ro
       - ./data:/data:rw
+      - ./logs:/logs:rw
     restart: always
     privileged: true
     networks:

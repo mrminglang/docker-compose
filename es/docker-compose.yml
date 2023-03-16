@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  es:
+    image: elasticsearch:7.13.3
+    container_name: es                            # 容器名称，可与服务名称一致
+    hostname: es                                  # 容器机器名，可与容器名称和服务名称一致
+    environment:
+      - "cluster.name=es-cluster"                 # 集群名称，两个节点需要保持一致
+      - "discovery.type=single-node"              # 以单一节点模式启动
+#      - node.name=node-0                         # 节点名称
+#      - "xpack.security.enabled=false"           # xpack是否需要密码登录
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m -Xmn256m" # 设置使用jvm内存大小
+      - bootstrap.memory_lock=true
+      - TZ=Asia/Shanghai
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+#      - ./conf/es/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - ./data/es:/usr/share/elasticsearch/data:rw     #数据文件挂载
+      - ./logs/es:/usr/share/elasticsearch/logs:rw     #日志文件挂载
+      - ./plugins/es:/usr/share/elasticsearch/plugins  #插件文件挂载
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    restart: always
+    privileged: true
+    networks:
+      - esnet
+
+networks:
+  esnet: #docker network create esnet
+    external: true

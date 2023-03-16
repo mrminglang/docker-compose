@@ -1,0 +1,63 @@
+version: "3"
+services:
+  elk-es:
+    image: docker.io/elasticsearch:7.5.1
+    container_name: elk-es
+    environment:
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m -Xmn256m"
+      - TZ=Asia/Shanghai
+    volumes:
+      - ./es/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - ./es/data:/usr/share/elasticsearch/data:rw
+      - ./es/logs:/usr/share/elasticsearch/logs:rw
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    restart: always
+    privileged: true
+    networks:
+      elk:
+
+  elk-kibana:
+    image: docker.io/kibana:7.5.1
+    container_name: elk-kibana
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - ./kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elk-es
+    links:
+      - elk-es
+    restart: always
+    privileged: true
+    networks:
+      elk:
+
+  elk-logstash:
+    image: docker.io/logstash:7.5.1
+    container_name: elk-logstash
+    #command: logstash -f /usr/share/logstash/config/logstash.conf
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - ./logstash/config:/usr/share/logstash/config
+      - ./logstash/data:/usr/share/logstash/data
+    command: "-f /usr/share/logstash/config/conf.d/"
+    ports:
+      - "9600:9600"
+      - "5044:5044"
+    depends_on:
+      - elk-es
+    links:
+      - elk-es
+    restart: always
+    privileged: true
+    networks:
+      elk:
+
+networks:
+  elk:
+    external: true
