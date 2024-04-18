@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  tafdev:
+    image: tafdev:0.0.1
+    container_name: tafdev
+    restart: always
+    privileged: true #特权模式
+    command: /usr/sbin/init #启动systemd进程
+    ports:
+      - "1022:22"
+    networks:
+      - app
+networks:
+  app:
+    external: true
+
